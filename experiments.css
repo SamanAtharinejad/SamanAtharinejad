@@ -1,0 +1,317 @@
+/* =====================================
+   EXPERIMENTS — COMING SOON
+   Styles are scoped to the Experiments view.
+===================================== */
+
+.experiments-view {
+  position: relative;
+  width: 100%;
+}
+
+.experiments-layout {
+  position: relative;
+  isolation: isolate;
+
+  width: min(1120px, 100%);
+  margin-inline: auto;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  align-items: center;
+  gap: clamp(48px, 7vw, 108px);
+
+  padding-block: 28px;
+}
+
+/* A quiet glow behind the workbench, using the site's existing palette. */
+.experiments-layout::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: 2%;
+
+  width: min(440px, 42vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+
+  background: rgba(45, 145, 75, 0.13);
+  filter: blur(105px);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* LEFT — INTRODUCTION */
+
+.experiments-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 28px;
+
+  color: #92b49b;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.experiments-eyebrow::before {
+  content: "";
+  width: 25px;
+  height: 1px;
+  flex: 0 0 auto;
+
+  background: #7bc894;
+  box-shadow: 0 0 10px rgba(123, 200, 148, 0.55);
+}
+
+.experiments-eyebrow span {
+  opacity: 0.5;
+}
+
+.experiments-title {
+  max-width: 680px;
+  margin: 0 !important;
+
+  color: var(--text-primary);
+  font-size: clamp(3.8rem, 7.2vw, 6.25rem) !important;
+  font-weight: 420 !important;
+  line-height: 0.98;
+  letter-spacing: -0.075em !important;
+}
+
+.experiments-title em {
+  color: #8ee6a9;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.085em;
+}
+
+.experiments-description {
+  max-width: 490px;
+  margin: 28px 0 0;
+
+  color: #a9b7ad;
+  font-size: 0.9rem;
+  font-weight: 350;
+  line-height: 1.9;
+}
+
+/* RIGHT — WORKBENCH PANEL */
+
+.experiments-workbench {
+  position: relative;
+  overflow: hidden;
+
+  padding: 28px 30px 24px;
+  border: 1px solid rgba(177, 225, 190, 0.15);
+  border-radius: 17px;
+
+  background:
+    linear-gradient(145deg, rgba(21, 43, 30, 0.68), rgba(7, 17, 11, 0.58));
+  box-shadow:
+    0 25px 90px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(226, 255, 233, 0.045);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.experiments-workbench::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle at 92% 0%,
+    rgba(106, 204, 135, 0.12),
+    transparent 40%
+  );
+}
+
+.experiments-workbench-top {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding-bottom: 19px;
+  border-bottom: 1px solid rgba(190, 229, 200, 0.13);
+}
+
+.experiments-workbench-label,
+.experiments-workbench-status {
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.experiments-workbench-label {
+  color: #9aac9f;
+}
+
+.experiments-workbench-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #a6dcb2;
+  white-space: nowrap;
+}
+
+.experiments-status-dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #8ee6a9;
+  box-shadow: 0 0 9px rgba(142, 230, 169, 0.8);
+}
+
+.experiments-status-dot::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 1px solid rgba(142, 230, 169, 0.42);
+  border-radius: 50%;
+  animation: experiments-status-pulse 2.3s ease-out infinite;
+}
+
+@keyframes experiments-status-pulse {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.experiments-workbench-title {
+  position: relative;
+  margin: 24px 0 8px;
+
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 450;
+  letter-spacing: -0.035em;
+}
+
+.experiments-workbench-copy {
+  position: relative;
+  margin: 0;
+
+  color: #83958a;
+  font-size: 0.72rem;
+  line-height: 1.75;
+}
+
+.experiments-steps {
+  position: relative;
+  margin-top: 27px;
+}
+
+.experiments-step {
+  min-height: 51px;
+
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+
+  border-top: 1px solid rgba(190, 229, 200, 0.085);
+}
+
+.experiments-step-number {
+  color: #668373;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.84rem;
+}
+
+.experiments-step-name {
+  color: #c3d0c6;
+  font-size: 0.63rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.experiments-step-state {
+  color: #70847a;
+  font-size: 0.54rem;
+  letter-spacing: 0.12em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.experiments-step:last-child .experiments-step-state {
+  color: #8edda4;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+  .experiments-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+    width: min(620px, 100%);
+    padding-block: 12px;
+  }
+
+  .experiments-layout::before {
+    top: auto;
+    right: -8%;
+    bottom: 0;
+    width: 360px;
+    transform: none;
+  }
+
+  .experiments-title {
+    font-size: clamp(3.6rem, 11vw, 5.6rem) !important;
+  }
+
+  .experiments-workbench {
+    width: 100%;
+  }
+}
+
+@media (max-width: 540px) {
+  .experiments-layout {
+    gap: 34px;
+  }
+
+  .experiments-eyebrow {
+    margin-bottom: 22px;
+    font-size: 0.58rem;
+  }
+
+  .experiments-title {
+    font-size: clamp(3.2rem, 14vw, 4.4rem) !important;
+  }
+
+  .experiments-description {
+    margin-top: 22px;
+    font-size: 0.82rem;
+  }
+
+  .experiments-workbench {
+    padding: 23px 20px 18px;
+  }
+
+  .experiments-workbench-label,
+  .experiments-workbench-status {
+    font-size: 0.49rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experiments-status-dot::after {
+    animation: none;
+  }
+}
