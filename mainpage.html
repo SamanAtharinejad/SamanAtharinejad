@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Saman Atharinejad — Digital Atelier</title>
+    <link rel="stylesheet" href="mainpage.css" />
+    <link rel="stylesheet" href="film-gallery.css" />
+    <link rel="stylesheet" href="experiments.css" />
+    <link rel="stylesheet" href="contact.css" />
+    <script src="mainpage.js" defer></script>
+    <script src="film-gallery.js" defer></script>
+  </head>
+
+  <body>
+    <!-- Background atmosphere -->
+    <div class="ambient-background" aria-hidden="true">
+      <div class="ambient-glow"></div>
+
+      <div class="particles">
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+      </div>
+    </div>
+
+    <!-- Website -->
+    <div class="site-container">
+      <!-- Header -->
+      <header class="site-header">
+        <div class="brand">
+          <span class="brand-name">Saman Atharinejad</span>
+          <span class="brand-role">Creative Technologist</span>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="main-navigation" aria-label="Main navigation">
+          <span class="glass-indicator" aria-hidden="true"></span>
+
+          <button class="nav-item active" type="button" data-view="home">
+            <span class="nav-label">Home</span>
+          </button>
+
+          <button class="nav-item" type="button" data-view="film-animation">
+            <span class="nav-label">Film & Animation</span>
+          </button>
+
+          <button class="nav-item" type="button" data-view="experiments">
+            <span class="nav-label">Experiments</span>
+          </button>
+
+          <button class="nav-item" type="button" data-view="contact">
+            <span class="nav-label">Contact</span>
+          </button>
+        </nav>
+
+        <!-- Animated header ribbon -->
+        <div class="header-wave" aria-hidden="true">
+          <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="ribbonFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#8bbba0" stop-opacity="0.08" />
+                <stop offset="50%" stop-color="#39795b" stop-opacity="0.13" />
+                <stop offset="100%" stop-color="#173d2b" stop-opacity="0.03" />
+              </linearGradient>
+
+              <linearGradient id="ribbonBackFill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#719d85" stop-opacity="0.04" />
+                <stop offset="50%" stop-color="#477e62" stop-opacity="0.09" />
+                <stop offset="100%" stop-color="#244d37" stop-opacity="0.03" />
+              </linearGradient>
+            </defs>
+
+            <!-- Back ribbon -->
+            <path
+              class="ribbon-back"
+              fill="url(#ribbonBackFill)"
+              d="M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70 L1460 114 C1260 151 1130 145 1000 112 C870 80 780 83 650 119 C520 155 430 145 320 115 C210 85 100 92 -20 129 Z"
+            >
+              <animate
+                attributeName="d"
+                dur="20s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keyTimes="0;0.33;0.66;1"
+                keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"
+                values="
+                  M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70 L1460 114 C1260 151 1130 145 1000 112 C870 80 780 83 650 119 C520 155 430 145 320 115 C210 85 100 92 -20 129 Z;
+                  M-20 90 C100 70 210 36 320 68 C430 100 520 137 650 98 C780 59 870 33 1000 65 C1130 97 1260 139 1460 89 L1460 133 C1260 171 1130 135 1000 101 C870 67 780 96 650 136 C520 176 430 139 320 106 C210 73 100 105 -20 145 Z;
+                  M-20 72 C100 42 210 61 320 91 C430 121 520 99 650 68 C780 37 870 57 1000 88 C1130 119 1260 96 1460 59 L1460 103 C1260 140 1130 157 1000 124 C870 91 780 73 650 112 C520 151 430 136 320 129 C210 122 100 74 -20 116 Z;
+                  M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70 L1460 114 C1260 151 1130 145 1000 112 C870 80 780 83 650 119 C520 155 430 145 320 115 C210 85 100 92 -20 129 Z
+                "
+              />
+            </path>
+
+            <!-- Main ribbon -->
+            <path
+              class="ribbon-main"
+              fill="url(#ribbonFill)"
+              d="M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70 L1460 114 C1260 151 1130 145 1000 112 C870 80 780 83 650 119 C520 155 430 145 320 115 C210 85 100 92 -20 129 Z"
+            >
+              <animate
+                attributeName="d"
+                dur="15s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keyTimes="0;0.33;0.66;1"
+                keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"
+                values="
+                  M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70 L1460 114 C1260 151 1130 145 1000 112 C870 80 780 83 650 119 C520 155 430 145 320 115 C210 85 100 92 -20 129 Z;
+                  M-20 90 C100 70 210 36 320 68 C430 100 520 137 650 98 C780 59 870 33 1000 65 C1130 97 1260 139 1460 89 L1460 133 C1260 171 1130 135 1000 101 C870 67 780 96 650 136 C520 176 430 139 320 106 C210 73 100 105 -20 145 Z;
+                  M-20 72 C100 42 210 61 320 91 C430 121 520 99 650 68 C780 37 870 57 1000 88 C1130 119 1260 96 1460 59 L1460 103 C1260 140 1130 157 1000 124 C870 91 780 73 650 112 C520 151 430 136 320 129 C210 122 100 74 -20 116 Z;
+                  M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70 L1460 114 C1260 151 1130 145 1000 112 C870 80 780 83 650 119 C520 155 430 145 320 115 C210 85 100 92 -20 129 Z
+                "
+              />
+            </path>
+
+            <!-- Soft upper edge -->
+            <path
+              class="wave-highlight"
+              d="M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70"
+              fill="none"
+              stroke="#9cc9ad"
+              stroke-opacity="0.24"
+              stroke-width="1.3"
+            >
+              <animate
+                attributeName="d"
+                dur="15s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keyTimes="0;0.33;0.66;1"
+                keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"
+                values="
+                  M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70;
+                  M-20 90 C100 70 210 36 320 68 C430 100 520 137 650 98 C780 59 870 33 1000 65 C1130 97 1260 139 1460 89;
+                  M-20 72 C100 42 210 61 320 91 C430 121 520 99 650 68 C780 37 870 57 1000 88 C1130 119 1260 96 1460 59;
+                  M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70
+                "
+              />
+            </path>
+          </svg>
+        </div>
+      </header>
+
+      <!-- Main content -->
+      <main class="view-container">
+        <!-- View 01: Home / Introduction -->
+
+        <!-- View 01: Home / Introduction -->
+        <section class="view home-view active" id="home">
+          <div class="home-layout">
+            <!-- Introduction -->
+            <div class="home-intro">
+              <h1>Hello, I'm Saman.</h1>
+
+              <p class="home-statement">
+                In the age of AI, the limits of creativity are boundless.
+              </p>
+
+              <p class="home-description">
+                My skill lies in turning your ideas into beautiful realities,
+                bringing concepts to life through technology, design, and
+                experimentation.
+              </p>
+
+              <p class="home-welcome">
+                Welcome to my <span>Digital Atelier.</span>
+              </p>
+            </div>
+
+            <!-- Orbital visual elements -->
+            <div class="home-visual" aria-hidden="true">
+              <div class="visual-orbit orbit-one">
+                <span class="orbit-point"></span>
+              </div>
+
+              <div class="visual-orbit orbit-two">
+                <span class="orbit-point"></span>
+              </div>
+
+              <div class="visual-orbit orbit-three"></div>
+
+              <span class="visual-caption">IDEAS IN MOTION</span>
+              <span class="visual-coordinate">01 / 04</span>
+            </div>
+          </div>
+
+          <!-- Bottom-centre particle-reactive button -->
+
+          <div class="home-cta-wrap">
+            <button
+              class="home-cta glass-button"
+              id="explore-work"
+              type="button"
+            >
+              <span class="glass-button-label">Explore my work</span>
+            </button>
+          </div>
+        </section>
+        <!-- View 02: Film & Animation -->
+        <section class="view film-view" id="film-animation" hidden>
+          <div class="film-gallery">
+            <div class="film-section-head">
+              <div>
+                <div class="film-eyebrow">
+                  THE DIGITAL ATELIER · FEATURED EXPERIENCE
+                </div>
+                <h1 class="film-section-title">Film &amp; Animation</h1>
+              </div>
+
+              <div class="film-section-note">
+                Two films connected through an interactive experience.
+              </div>
+            </div>
+
+            <div
+              class="film-experience"
+              id="film-experience"
+              data-stage="first"
+            >
+              <!-- PART 01: First video. Its source is configured in film-gallery.js. -->
+              <section
+                class="film-stage"
+                id="film-first-stage"
+                aria-label="First film"
+              >
+                <div class="film-video-frame">
+                  <video
+                    class="film-experience-video"
+                    id="film-first-video"
+                    playsinline
+                    controls
+                    preload="metadata"
+                    aria-label="First film"
+                    hidden
+                  ></video>
+
+                  <div
+                    class="film-video-placeholder"
+                    id="film-first-placeholder"
+                  >
+                    <span class="film-placeholder-index"
+                      >PART I / THE OPENING</span
+                    >
+                    <h2>First film</h2>
+                    <p>
+                      Your first video will appear here once you add its file
+                      path in <strong>film-gallery.js</strong>.
+                    </p>
+                    <code class="film-video-path"
+                      >./assets/videos/first-video.mp4</code
+                    >
+                    <button
+                      class="film-stage-button"
+                      id="film-preview-phone"
+                      type="button"
+                    >
+                      Preview phone interaction
+                    </button>
+                  </div>
+                </div>
+                <p class="film-stage-caption">The story begins here</p>
+              </section>
+
+              <!-- PART 02: Interactive phone experience. -->
+              <section
+                class="film-stage film-phone-stage"
+                id="film-phone-stage"
+                aria-label="Interactive phone experience"
+                hidden
+              >
+                <div class="film-phone-host" id="future-phone"></div>
+                <p class="film-phone-caption">
+                  Follow the conversation, then tap the fingerprint scanner to
+                  continue.
+                </p>
+              </section>
+
+              <!-- PART 03: Second video, shown after fingerprint verification. -->
+              <section
+                class="film-stage"
+                id="film-second-stage"
+                aria-label="Second film"
+                hidden
+              >
+                <div class="film-video-frame">
+                  <video
+                    class="film-experience-video"
+                    id="film-second-video"
+                    playsinline
+                    controls
+                    preload="metadata"
+                    aria-label="Second film"
+                    hidden
+                  ></video>
+
+                  <div
+                    class="film-video-placeholder"
+                    id="film-second-placeholder"
+                  >
+                    <span class="film-placeholder-index"
+                      >PART II / THE REVEAL</span
+                    >
+                    <h2>Second film</h2>
+                    <p>
+                      Your second video will appear here once you add its file
+                      path in <strong>film-gallery.js</strong>.
+                    </p>
+                    <code class="film-video-path"
+                      >./assets/videos/second-video.mp4</code
+                    >
+                  </div>
+                </div>
+
+                <button
+                  class="film-stage-button film-replay-button"
+                  id="film-replay-experience"
+                  type="button"
+                >
+                  Replay experience
+                </button>
+              </section>
+            </div>
+          </div>
+        </section>
+        >
+
+        <!-- View 03: Digital Experiments -->
+        <section class="view experiments-view" id="experiments" hidden>
+          <div class="experiments-layout">
+            <div class="experiments-intro">
+              <div class="experiments-eyebrow">
+                EXPERIMENTS <span>/</span> 03
+              </div>
+
+              <h1 class="experiments-title">Coming <em>soon...</em></h1>
+
+              <p class="experiments-description">
+                A collection of experiments, small tools, and ideas in progress.
+                This space is taking shape behind the scenes — the good stuff
+                will appear here when it’s ready.
+              </p>
+            </div>
+
+            <aside
+              class="experiments-workbench"
+              aria-label="Experiments development status"
+            >
+              <div class="experiments-workbench-top">
+                <span class="experiments-workbench-label">THE WORKBENCH</span>
+
+                <span class="experiments-workbench-status">
+                  <span
+                    class="experiments-status-dot"
+                    aria-hidden="true"
+                  ></span>
+                  UNDER DEVELOPMENT
+                </span>
+              </div>
+
+              <h2 class="experiments-workbench-title">
+                Ideas are taking shape.
+              </h2>
+
+              <p class="experiments-workbench-copy">
+                From the first spark of an idea to something you can explore and
+                use.
+              </p>
+
+              <div class="experiments-steps" aria-label="Development stages">
+                <div class="experiments-step">
+                  <span class="experiments-step-number">01</span>
+                  <span class="experiments-step-name">Explore</span>
+                  <span class="experiments-step-state">Curiosity</span>
+                </div>
+
+                <div class="experiments-step">
+                  <span class="experiments-step-number">02</span>
+                  <span class="experiments-step-name">Build</span>
+                  <span class="experiments-step-state">In progress</span>
+                </div>
+
+                <div class="experiments-step">
+                  <span class="experiments-step-number">03</span>
+                  <span class="experiments-step-name">Share</span>
+                  <span class="experiments-step-state">Coming soon</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+        <!-- View 04: Contact -->
+        <section class="view contact-view" id="contact" hidden>
+          <div class="contact-profile">
+            <!-- Profile portrait -->
+            <div class="contact-portrait-wrap">
+              <span class="contact-portrait-halo" aria-hidden="true"></span>
+              <span class="contact-orbit" aria-hidden="true"></span>
+              <span
+                class="contact-orbit contact-orbit-two"
+                aria-hidden="true"
+              ></span>
+              <span
+                class="contact-orbit contact-orbit-three"
+                aria-hidden="true"
+              ></span>
+              <span
+                class="contact-orbit-dot contact-orbit-dot-one"
+                aria-hidden="true"
+              ></span>
+              <span
+                class="contact-orbit-dot contact-orbit-dot-two"
+                aria-hidden="true"
+              ></span>
+
+              <div class="contact-portrait-frame">
+                <img
+                  class="contact-portrait-image"
+                  src="./assets/profile/20260909_104917.png"
+                  alt="Saman Atharinejad"
+                />
+              </div>
+
+              <span class="contact-portrait-note">PROFILE PORTRAIT</span>
+            </div>
+
+            <p class="contact-tagline">
+              Creative technology, <span>visual storytelling</span> &amp; human
+              insight.
+            </p>
+
+            <!-- Areas of work -->
+            <div class="contact-skills">
+              <article class="contact-skill-card">
+                <div class="contact-skill-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M12 3.2v2.1M12 18.7v2.1M3.2 12h2.1M18.7 12h2.1M5.8 5.8l1.5 1.5M16.7 16.7l1.5 1.5M18.2 5.8l-1.5 1.5M7.3 16.7l-1.5 1.5"
+                    />
+                    <circle cx="12" cy="12" r="4.1" />
+                    <path d="M10.6 12.2l1 1 2-2.4" />
+                  </svg>
+                </div>
+                <h2>Generative AI</h2>
+                <p>AI-assisted image, video and creative content generation.</p>
+              </article>
+
+              <article class="contact-skill-card">
+                <div class="contact-skill-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="3.3" y="4.1" width="17.4" height="15.8" rx="2.1" />
+                    <path
+                      d="M3.8 8h16.4M7 6.1h.1M10 6.1h.1M7.2 12h4.2M7.2 15.2h9.6"
+                    />
+                  </svg>
+                </div>
+                <h2>Web Design</h2>
+                <p>
+                  Designing thoughtful websites and intuitive digital
+                  experiences.
+                </p>
+              </article>
+
+              <article class="contact-skill-card">
+                <div class="contact-skill-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="3.2" y="5.2" width="17.6" height="13.6" rx="2" />
+                    <path
+                      d="M10 9l5.1 3-5.1 3V9zM7 2.9v2.3M17 2.9v2.3M7 18.8v2.3M17 18.8v2.3"
+                    />
+                  </svg>
+                </div>
+                <h2>Advertising &amp; Video</h2>
+                <p>
+                  Promotional visuals, creative concepts and visual
+                  storytelling.
+                </p>
+              </article>
+
+              <article class="contact-skill-card">
+                <div class="contact-skill-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      d="M12 20.5s-7.8-4.3-7.8-10.2a4.2 4.2 0 0 1 7.8-2.1 4.2 4.2 0 0 1 7.8 2.1c0 5.9-7.8 10.2-7.8 10.2z"
+                    />
+                    <path d="M8.2 12h2.1l1.1-2.2 1.7 4.4 1.1-2.2h1.6" />
+                  </svg>
+                </div>
+                <h2>Psychology</h2>
+                <p>
+                  Bachelor’s degree in Psychology, grounding my work in human
+                  behaviour, perception and communication.
+                </p>
+              </article>
+            </div>
+            <div class="contact-connect">
+              <div class="contact-divider" aria-hidden="true">
+                <span class="contact-divider-mark"></span>
+              </div>
+
+              <h2>Let’s connect.</h2>
+
+              <div class="contact-links">
+                <a
+                  class="contact-link"
+                  href="mailto:samanatharinejad@gmail.com"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="m4 7 8 6 8-6" />
+                  </svg>
+                  <span>samanatharinejad@gmail.com</span>
+                </a>
+                <a class="contact-link" href="tel:+989107333832">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M7.1 3.5h2.6l1.2 4-1.8 1.6a15.2 15.2 0 0 0 5.8 5.8l1.6-1.8 4 1.2v2.6c0 1.1-.9 2-2 2A15.5 15.5 0 0 1 5.1 5.5c0-1.1.9-2 2-2z"
+                    />
+                  </svg>
+                  <span>+98 910 733 3832</span>
+                </a>
+                <a
+                  class="contact-link"
+                  href="https://www.instagram.com/samanathari/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" />
+                    <circle cx="12" cy="12" r="3.7" />
+                    <path d="M17.7 6.5h.01" />
+                  </svg>
+                  <span>@samanathari</span>
+                </a>
+                <a
+                  class="contact-link"
+                  href="https://www.linkedin.com/in/saman-atharinejad-23825b313/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M5 9v10M5 5.2v.1M10 19v-5.7a3 3 0 0 1 6 0V19M10 9v10"
+                    />
+                    <rect x="3" y="3" width="18" height="18" rx="2.5" />
+                  </svg>
+                  <span>LinkedIn Profile</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- =====================================
+     BACKGROUND MUSIC PLAYER
+===================================== -->
+
+    <audio id="site-music" preload="auto" loop>
+      <source
+        src="./assets/bgmusic/djrum-creature-pt-1.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+
+    <aside
+      class="music-widget"
+      id="music-widget"
+      aria-label="Website music player"
+    >
+      <!-- Expanded music player -->
+      <div class="music-expanded">
+        <img class="music-cover" src="assets/cover/djrum.jpg" alt="" />
+
+        <div class="music-info">
+          <span class="music-heading">NOW PLAYING</span>
+          <span class="music-artist">Djrum - Creature, Pt. 1</span>
+          <span class="music-status" id="music-status">Starting music...</span>
+        </div>
+
+        <button
+          class="music-toggle"
+          id="music-toggle"
+          type="button"
+          aria-label="Pause music"
+        >
+          <span id="music-toggle-icon">Ⅱ</span>
+        </button>
+
+        <div class="music-volume">
+          <span>VOL</span>
+          <input
+            type="range"
+            id="music-volume"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.30"
+            aria-label="Music volume"
+          />
+        </div>
+      </div>
+
+      <!-- Compact rotating album disc -->
+      <button
+        class="music-disc"
+        id="music-disc"
+        type="button"
+        aria-label="Expand music player"
+        aria-expanded="false"
+      >
+        <img src="assets/cover/djrum.jpg" alt="" />
+        <span class="music-disc-center"></span>
+      </button>
+    </aside>
+  </body>
+</html>
