@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Saman Atharinejad — Digital Atelier</title>
+
+    <!--
+      FILE MAP
+        mainpage.css      colour tokens + shared layout (load this first)
+        film-gallery.css  Film & Animation view + the ARCHE phone
+        experiments.css   Experiments view
+        contact.css       Contact view
+        mainpage.js       navigation, explore button, music player
+        film-gallery.js   Film & Animation experience
+      The CSS files are separate so each view can be edited on its own.
+      Scripts use `defer`: they run after the page is parsed, in this order.
+    -->
     <link rel="stylesheet" href="mainpage.css" />
     <link rel="stylesheet" href="film-gallery.css" />
     <link rel="stylesheet" href="experiments.css" />
@@ -14,7 +26,8 @@
   </head>
 
   <body>
-    <!-- Background atmosphere -->
+    <!-- Decorative background: green glow + seven drifting dots (aria-hidden
+         = ignored by screen readers). Styled in mainpage.css sections 2-3. -->
     <div class="ambient-background" aria-hidden="true">
       <div class="ambient-glow"></div>
 
@@ -29,16 +42,19 @@
       </div>
     </div>
 
-    <!-- Website -->
+    <!-- Everything the visitor reads and clicks lives inside .site-container -->
     <div class="site-container">
-      <!-- Header -->
+      <!-- Header: brand, navigation and the animated ribbon underneath -->
       <header class="site-header">
         <div class="brand">
           <span class="brand-name">Saman Atharinejad</span>
           <span class="brand-role">Creative Technologist</span>
         </div>
 
-        <!-- Navigation -->
+        <!-- Navigation. Each button's data-view must match the id of the
+             <section class="view"> it opens (see <main> below).
+             The first button with class "active" is the page shown on load.
+             .glass-indicator is the sliding highlight, moved by mainpage.js. -->
         <nav class="main-navigation" aria-label="Main navigation">
           <span class="glass-indicator" aria-hidden="true"></span>
 
@@ -59,7 +75,22 @@
           </button>
         </nav>
 
-        <!-- Animated header ribbon -->
+        <!--
+          Animated header ribbon: three translucent wave shapes (back ribbon,
+          main ribbon, thin highlight line) that slowly morph.
+
+          SIZE: the CSS (.header-wave, mainpage.css 5.2) stretches this SVG to
+          the full width of the screen. preserveAspectRatio="none" lets the
+          drawing stretch to fit any width, and every path runs from x=-20 to
+          x=1460 (the viewBox is 1440 wide) so the ends are always off-screen.
+
+          ANIMATION: each <animate> morphs the path's "d" through four
+          shapes. If you edit a shape, keep the SAME number and order of
+          path commands in every entry of `values`, otherwise the browser
+          can't blend between them and the animation stops. The first and
+          last entries are identical so the loop is seamless. The durations
+          (15s and 20s) differ on purpose so the layers drift out of sync.
+        -->
         <div class="header-wave" aria-hidden="true">
           <svg viewBox="0 0 1440 160" preserveAspectRatio="none">
             <defs>
@@ -76,7 +107,7 @@
               </linearGradient>
             </defs>
 
-            <!-- Back ribbon -->
+            <!-- Back ribbon (slowest: 20s) -->
             <path
               class="ribbon-back"
               fill="url(#ribbonBackFill)"
@@ -120,7 +151,9 @@
               />
             </path>
 
-            <!-- Soft upper edge -->
+            <!-- Thin highlight line: the top edge of the main ribbon. It must
+                 animate with the same values as the main ribbon's top edge
+                 (same 15s timing) so the line stays attached to it. -->
             <path
               class="wave-highlight"
               d="M-20 82 C100 58 210 48 320 77 C430 106 520 121 650 83 C780 45 870 45 1000 76 C1130 107 1260 111 1460 70"
@@ -148,11 +181,11 @@
         </div>
       </header>
 
-      <!-- Main content -->
+      <!-- Main content. Every page is one <section class="view">; only one is
+           visible at a time. mainpage.js toggles the `hidden` attribute, so
+           give new pages the `hidden` attribute and a unique id. -->
       <main class="view-container">
-        <!-- View 01: Home / Introduction -->
-
-        <!-- View 01: Home / Introduction -->
+        <!-- View 01: Home -->
         <section class="view home-view active" id="home">
           <div class="home-layout">
             <!-- Introduction -->
@@ -174,7 +207,7 @@
               </p>
             </div>
 
-            <!-- Orbital visual elements -->
+            <!-- Decorative orbit rings (animated in CSS, nothing to edit here) -->
             <div class="home-visual" aria-hidden="true">
               <div class="visual-orbit orbit-one">
                 <span class="orbit-point"></span>
@@ -191,8 +224,8 @@
             </div>
           </div>
 
-          <!-- Bottom-centre particle-reactive button -->
-
+          <!-- "Explore my work": #explore-work is the id mainpage.js looks
+               for. Clicking it opens the Film & Animation view. -->
           <div class="home-cta-wrap">
             <button
               class="home-cta glass-button"
@@ -203,7 +236,11 @@
             </button>
           </div>
         </section>
-        <!-- View 02: Film & Animation -->
+
+        <!-- View 02: Film & Animation
+             Three stages, only one visible at a time (film-gallery.js):
+             first video -> interactive phone -> second video.
+             Video file paths are set in film-gallery.js (VIDEO_SOURCES), not here. -->
         <section class="view film-view" id="film-animation" hidden>
           <div class="film-gallery">
             <div class="film-section-head">
@@ -224,7 +261,8 @@
               id="film-experience"
               data-stage="first"
             >
-              <!-- PART 01: First video. Its source is configured in film-gallery.js. -->
+              <!-- PART 01: first video. The placeholder card inside is shown
+                   only when VIDEO_SOURCES.first is empty. -->
               <section
                 class="film-stage"
                 id="film-first-stage"
@@ -268,7 +306,9 @@
                 <p class="film-stage-caption">The story begins here</p>
               </section>
 
-              <!-- PART 02: Interactive phone experience. -->
+              <!-- PART 02: interactive phone. #future-phone starts empty:
+                   film-gallery.js builds the phone here when this stage opens
+                   and removes it afterwards. -->
               <section
                 class="film-stage film-phone-stage"
                 id="film-phone-stage"
@@ -282,7 +322,8 @@
                 </p>
               </section>
 
-              <!-- PART 03: Second video, shown after fingerprint verification. -->
+              <!-- PART 03: second video, shown after the fingerprint is
+                   verified. "Replay experience" returns to part 01. -->
               <section
                 class="film-stage"
                 id="film-second-stage"
@@ -329,9 +370,16 @@
             </div>
           </div>
         </section>
+        <!-- KNOWN TYPO: the lone ">" on the next line is a leftover from an
+             earlier edit. It is real text inside <main>, so it shows up as a
+             visible ">" at the right edge of every page and makes the content
+             about 10px narrower. It is left in place for now only so the look
+             stays unchanged; delete the line to remove it. -->
         >
 
-        <!-- View 03: Digital Experiments -->
+        <!-- View 03: Experiments ("coming soon" page).
+             To add stages to the workbench list, copy one
+             .experiments-step block. -->
         <section class="view experiments-view" id="experiments" hidden>
           <div class="experiments-layout">
             <div class="experiments-intro">
@@ -398,7 +446,9 @@
         <!-- View 04: Contact -->
         <section class="view contact-view" id="contact" hidden>
           <div class="contact-profile">
-            <!-- Profile portrait -->
+            <!-- Profile portrait. The glow, rings and dots are decorative
+                 (aria-hidden); the photo itself is the <img> inside
+                 .contact-portrait-frame. -->
             <div class="contact-portrait-wrap">
               <span class="contact-portrait-halo" aria-hidden="true"></span>
               <span class="contact-orbit" aria-hidden="true"></span>
@@ -420,6 +470,8 @@
               ></span>
 
               <div class="contact-portrait-frame">
+                <!-- To change the photo, replace this file or edit the src.
+                     Keep the alt text meaningful for screen readers. -->
                 <img
                   class="contact-portrait-image"
                   src="./assets/profile/20260909_104917.png"
@@ -435,7 +487,9 @@
               insight.
             </p>
 
-            <!-- Areas of work -->
+            <!-- Areas of work: four cards, each an icon + title + one line.
+                 Icons are inline SVGs drawn with `currentColor`, so their
+                 colour comes from CSS (.contact-skill-icon). -->
             <div class="contact-skills">
               <article class="contact-skill-card">
                 <div class="contact-skill-icon" aria-hidden="true">
@@ -499,6 +553,10 @@
                 </p>
               </article>
             </div>
+            <!-- Contact links. mailto: and tel: open the visitor's email and
+                 phone apps; the two social links open in a new tab, and
+                 rel="noopener noreferrer" keeps those pages from getting
+                 access to this one. -->
             <div class="contact-connect">
               <div class="contact-divider" aria-hidden="true">
                 <span class="contact-divider-mark"></span>
@@ -561,6 +619,11 @@
 
     <!-- =====================================
      BACKGROUND MUSIC PLAYER
+     Behaviour lives in mainpage.js (section 3), styling in mainpage.css
+     (section 13). The script finds these elements by id, so keep the ids.
+     Audio file: ./assets/bgmusic/  Cover art: ./assets/cover/
+     Browsers block autoplay, so music starts on the visitor's first click
+     or key press.
 ===================================== -->
 
     <audio id="site-music" preload="auto" loop>
@@ -575,7 +638,7 @@
       id="music-widget"
       aria-label="Website music player"
     >
-      <!-- Expanded music player -->
+      <!-- Expanded panel: cover, track info, play/pause, volume -->
       <div class="music-expanded">
         <img class="music-cover" src="assets/cover/djrum.jpg" alt="" />
 
@@ -608,7 +671,8 @@
         </div>
       </div>
 
-      <!-- Compact rotating album disc -->
+      <!-- Compact state: a small album disc (spins while playing). The panel
+           shrinks into it a few seconds after the music starts. -->
       <button
         class="music-disc"
         id="music-disc"

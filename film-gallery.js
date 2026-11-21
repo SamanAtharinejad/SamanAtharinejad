@@ -1,10 +1,21 @@
 /* =========================================
    FILM & ANIMATION — TWO-PART EXPERIENCE
-   Video 1 -> interactive phone -> Video 2
+   Video 1 -> interactive ARCHE phone -> Video 2
 
-   Add the real video paths in VIDEO_SOURCES
-   when the files are ready. No other files
-   need to be edited for the video paths.
+   FLOW (a small three-state machine, see setStage()):
+     "first"  video 1 plays; when it ends, move on to "phone"
+     "phone"  the phone animation runs; the visitor taps the fingerprint
+              scanner, and after "VERIFIED" we move on to "second"
+     "second" video 2 starts; "Replay experience" goes back to "first"
+
+   TO CHANGE A VIDEO: edit VIDEO_SOURCES below. Nothing else needs touching.
+
+   FILE MAP
+     index.html        markup: #film-animation and everything inside it
+     film-gallery.css  styling (page layout + the .fy phone)
+     film-gallery.js   this file
+   The phone's HTML is not in index.html: FutureApp.mount() creates it inside
+   #future-phone only when the phone stage is reached, then removes it again.
 ========================================= */
 
 (() => {
@@ -13,6 +24,7 @@
   const view = document.querySelector("#film-animation");
   if (!view) return;
 
+  // Shorthand for "find this element inside the Film view only".
   const $ = (selector) => view.querySelector(selector);
 
   const experience = $("#film-experience");
@@ -41,19 +53,23 @@
     replayButton,
   ];
 
+  // Safety net: if someone renames an id in index.html, stop here with a clear
+  // console message instead of failing later with a confusing error.
   if (!requiredElements.every(Boolean)) {
     console.error("Film experience: required HTML elements are missing.");
     return;
   }
 
   /*
-    VIDEO PLACEHOLDERS:
-    Add your video paths here later.
-    Example: "./assets/videos/first-video.mp4"
+    VIDEO PATHS (relative to index.html).
+    The folder name is case-sensitive on most web servers: "Video" and
+    "video" are different folders once the site is online, even if both
+    work on your computer.
+    Set a path to "" to show the placeholder card for that video instead.
   */
   const VIDEO_SOURCES = {
-    first: "./assets/Video/Part1.mp4", // TODO: add the path to your first video.
-    second: "./assets/Video/Part2.mp4", // TODO: add the path to your second video.
+    first: "./assets/Video/Part1.mp4",
+    second: "./assets/Video/Part2.mp4",
   };
 
   const reducedMotion = window.matchMedia(
@@ -61,9 +77,9 @@
   ).matches;
 
   let currentStage = "first";
-  let phoneApp = null;
-  let phoneMountFrame = 0;
-  let destroyed = false;
+  let phoneApp = null; // handle returned by FutureApp.mount(); null = no phone
+  let phoneMountFrame = 0; // pending requestAnimationFrame id for mounting
+  let destroyed = false; // true after the page is closed (see "pagehide")
 
   function pauseVideos() {
     [firstVideo, secondVideo].forEach((video) => {
@@ -71,6 +87,8 @@
     });
   }
 
+  // Points a <video> at its file and hides its placeholder card, or does the
+  // reverse when `source` is empty.
   function configureVideo(video, placeholder, source) {
     if (source && source.trim()) {
       video.src = source.trim();
@@ -84,6 +102,8 @@
     }
   }
 
+  // Tears the phone down completely: stops its timers and empties
+  // #future-phone. Called whenever we leave the phone stage.
   function destroyPhone() {
     if (phoneMountFrame) {
       cancelAnimationFrame(phoneMountFrame);
@@ -98,6 +118,13 @@
     }
   }
 
+  /*
+    Builds the phone. The mount waits one animation frame so the stage has
+    become visible and laid out first; the phone's canvas measures its own
+    size on creation and would otherwise measure 0x0 inside a hidden stage.
+    The repeated checks inside the callback cover the visitor leaving the
+    page during that single frame.
+  */
   function mountPhone() {
     if (destroyed || view.hidden || currentStage !== "phone" || phoneApp) {
       return;
@@ -110,6 +137,8 @@
         return;
       }
 
+      // Text shown in the phone. Changing these changes the story; see the
+      // list of options in FutureApp.mount() below.
       phoneApp = FutureApp.mount(phoneHost, {
         brand: "ARCHE",
         cta: "ASK ARCHE",
@@ -120,11 +149,13 @@
         scanning: "SCANNING",
         verified: "VERIFIED",
         allowSkip: false,
-        onNext: () => setStage("second"),
+        onNext: () => setStage("second"), // fingerprint verified
       });
     });
   }
 
+  // The one place where the experience changes stage: shows the matching
+  // section, hides the others, and starts/stops what each stage needs.
   function setStage(nextStage) {
     if (!["first", "phone", "second"].includes(nextStage)) return;
 
@@ -161,8 +192,11 @@
         // The video may not have loaded metadata yet.
       }
 
-      // Try to start the second film after fingerprint verification.
-      // Some browsers may block delayed autoplay; native controls remain available.
+      // Try to start the second film right after fingerprint verification.
+      // The visitor has already tapped the page by now, which most browsers
+      // accept, but some (Safari in particular) block playback that starts
+      // after a delay. In that case the visitor presses play on the video's
+      // own controls, so nothing breaks.
       if (VIDEO_SOURCES.second) {
         const playAttempt = secondVideo.play();
 
@@ -176,9 +210,25 @@
   }
 
   /*
-    Claude's interactive phone component.
-    It is mounted only after the Film view is visible
-    and the experience reaches the phone stage.
+    THE ARCHE PHONE (class prefix "fy" in the CSS)
+
+    A self-contained animated phone. FutureApp.mount(hostElement, options)
+    fills `hostElement` with the phone and starts playing, and returns:
+      { reset(), destroy() }   reset replays the intro; destroy cleans up.
+
+    Options (all optional, defaults shown in `settings` below):
+      brand        name in the advert and chat header
+      cta          label of the button tapped in the advert
+      quote        the AI's chat message ("\n" = new line)
+      userLine     the visitor's typed reply
+      hint         label above the fingerprint scanner
+      scanning     label while scanning
+      verified     label once verified
+      allowSkip    true = tapping early skips straight to the scanner
+      onNext       function called after verification
+
+    It also fires a "futureisyours:next" event on the host, for code that
+    prefers events over callbacks.
   */
   const FutureApp = (() => {
     function mount(host, options) {
@@ -243,7 +293,13 @@
       query(".fy-top b").textContent = settings.brand;
       fingerprintLabel.textContent = settings.hint;
 
-      /* Matrix rain canvas */
+      /*
+        Matrix-style rain on a <canvas> behind the scenes.
+        Every 50ms (drawRain) each column draws one character and moves down.
+        `rainAlpha` is the brightness, raised in steps as the story advances.
+        The canvas is resized on window resize; the pixel-ratio maths keeps it
+        sharp on high-density screens.
+      */
       let fontSize = 12;
       let columns = 0;
       let drops = [];
@@ -309,6 +365,13 @@
 
       window.addEventListener("resize", sizeCanvas);
 
+      /*
+        Cancellable pause used by the whole animation timeline.
+        Each run of the sequence gets a number (animationRun). If another run
+        starts, or the phone is destroyed, a pending wait() REJECTS instead of
+        resolving, which stops the old sequence at its next step. The `catch`
+        blocks in playSequence/startScan swallow that rejection on purpose.
+      */
       const wait = (runId, milliseconds) =>
         new Promise((resolve, reject) => {
           window.setTimeout(() => {
@@ -317,6 +380,9 @@
           }, milliseconds);
         });
 
+      // Types `text` into `element` one character at a time (delay in ms,
+      // with some random variation so it feels human). Instant when the OS
+      // asks for reduced motion.
       async function typeText(runId, element, text, delay) {
         if (prefersReducedMotion) {
           element.textContent = text;
@@ -329,12 +395,16 @@
         }
       }
 
+      // Restarts a CSS animation by removing the class, forcing a reflow
+      // (the offsetWidth read), and adding the class again.
       function retrigger(element, className) {
         element.classList.remove(className);
         void element.offsetWidth;
         element.classList.add(className);
       }
 
+      // Centre point of `element`, measured from the phone's top-left corner.
+      // Used to place the tap ripple exactly on a button.
       function centerOf(element) {
         const rootRect = root.getBoundingClientRect();
         const elementRect = element.getBoundingClientRect();
@@ -351,6 +421,8 @@
         retrigger(tap, "go");
       }
 
+      // Notifies the page that the visitor passed the scanner. The guard
+      // makes sure it can only fire once per run.
       function fireNext() {
         if (nextWasFired) return;
         nextWasFired = true;
@@ -373,6 +445,7 @@
         return message;
       }
 
+      // Puts the phone back to its blank starting state (before the advert).
       function clearScene() {
         ad.classList.remove("on");
         chat.classList.remove("on", "done");
@@ -388,6 +461,9 @@
         rainAlpha = 0.14;
       }
 
+      // Final "waiting for a tap" state: chat visible, fingerprint scanner
+      // pulsing. `fillMessages` is only true when the intro was skipped, so
+      // the chat bubbles must be filled in instantly.
       function showReady(fillMessages) {
         if (fillMessages) {
           messages.innerHTML = "";
@@ -408,6 +484,14 @@
         root.setAttribute("aria-label", "Scan your fingerprint to continue");
       }
 
+      /*
+        THE INTRO TIMELINE, step by step:
+          advert fades in -> slogan -> "ASK ARCHE" button -> simulated tap ->
+          chat opens -> typing dots -> AI quote is typed -> user reply is typed
+          -> send -> pulse -> fingerprint scanner ready.
+        The numbers passed to wait() are milliseconds; change them to speed up
+        or slow down individual steps (the whole intro takes roughly 16 seconds).
+      */
       async function playSequence() {
         const runId = ++animationRun;
         state = "playing";
@@ -483,6 +567,8 @@
         }
       }
 
+      // Runs after the visitor taps the ready phone: ripple at the tap point,
+      // ~1.2s of SCANNING, then VERIFIED, then hands over via fireNext().
       async function startScan(point) {
         const runId = ++animationRun;
         state = "scanning";
@@ -509,6 +595,8 @@
         }
       }
 
+      // Single entry point for mouse, touch and keyboard (Enter / Space).
+      // While the intro plays, taps are ignored unless allowSkip is on.
       function handlePress(event) {
         if (state === "playing") {
           if (settings.allowSkip) {
@@ -564,15 +652,18 @@
     return { mount };
   })();
 
-  /* Video / stage events */
+  /* ---- Wiring: videos, buttons and the view lifecycle ---- */
 
   configureVideo(firstVideo, firstPlaceholder, VIDEO_SOURCES.first);
   configureVideo(secondVideo, secondPlaceholder, VIDEO_SOURCES.second);
 
+  // Video 1 finishing is what moves the visitor into the phone stage.
   firstVideo.addEventListener("ended", () => {
     if (currentStage === "first") setStage("phone");
   });
 
+  // A missing or misspelt file shows up here. Check the path (and its
+  // capitalisation) in VIDEO_SOURCES and the Network tab in dev tools.
   firstVideo.addEventListener("error", () => {
     if (VIDEO_SOURCES.first) {
       console.error(
@@ -591,13 +682,19 @@
     }
   });
 
+  // The preview button only exists inside video 1's placeholder card, so it
+  // appears only while VIDEO_SOURCES.first is empty. It is a shortcut for
+  // testing the phone without a video.
   previewPhoneButton.addEventListener("click", () => setStage("phone"));
   replayButton.addEventListener("click", () => setStage("first"));
 
   /*
-    The Film view is initially hidden by the site's navigation.
-    Mount the phone only after the view becomes visible so its
-    canvas measures the correct width and height.
+    mainpage.js shows and hides this whole view by toggling its `hidden`
+    attribute. We watch that attribute so that:
+      - leaving the Film page pauses the videos and removes the phone
+      - coming back always restarts from video 1
+    The phone is only built while the view is visible, because its canvas
+    measures its size on creation (a hidden view would measure 0 x 0).
   */
   const viewObserver = new MutationObserver(() => {
     if (view.hidden) {
@@ -621,6 +718,8 @@
     experience.dataset.stage = "first";
   }
 
+  // Page closing or being put into the back/forward cache: stop everything
+  // so no timers keep running in the background.
   window.addEventListener("pagehide", () => {
     destroyed = true;
     pauseVideos();

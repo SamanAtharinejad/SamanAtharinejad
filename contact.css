@@ -1,7 +1,16 @@
 /* =====================================
-   CONTACT VIEW — DIGITAL ATELIER
-   Scoped styles: does not alter global
-   navigation, background, header or music.
+   CONTACT VIEW  (<section id="contact"> in index.html)
+
+   Top to bottom, the page is built from four blocks:
+     1. Portrait with halo + orbit rings
+     2. One-line tagline
+     3. Four "areas of work" cards
+     4. "Let's connect" contact links
+
+   Every class starts with `contact-`, so nothing here can leak into the
+   other views. Colours come from the :root tokens in mainpage.css; the
+   fallback after each var() (e.g. var(--text-primary, #e8f1eb)) only
+   matters if this file is ever used on its own.
 ===================================== */
 
 .contact-view {
@@ -19,7 +28,11 @@
   text-align: center;
 }
 
-/* Portrait and orbital frame */
+/* ---- 1. Portrait ----
+   Layer order inside .contact-portrait-wrap (back to front):
+   halo glow -> three orbit rings -> two glowing dots -> photo frame.
+   The wrapper is 224px (192px on phones, see the mobile block); the frame
+   inside is slightly smaller so the rings read as orbiting around it. */
 .contact-portrait-wrap {
   position: relative;
   width: 224px;
@@ -55,6 +68,8 @@
   height: 196px;
   transform: rotate(29deg);
   border-color: rgba(150, 218, 173, 0.12);
+  /* Only this ring spins. See the keyframes at the bottom for why the
+     spin uses `rotate` instead of `transform`. */
   animation: contact-orbit-drift 32s linear infinite;
 }
 
@@ -106,10 +121,16 @@
 }
 
 /*
-  PROFILE PHOTO PLACEHOLDER:
-  Replace the .contact-portrait-placeholder div in the HTML with:
-  <img class="contact-portrait-image" src="./assets/profile.jpg" alt="Saman Atharinejad" />
-  Put your chosen image at assets/profile.jpg (or update the src path).
+  CHANGING THE PROFILE PHOTO:
+  The photo is the <img class="contact-portrait-image"> in index.html.
+  Swap the file or edit its src path. The photo is cropped to a circle with
+  object-fit: cover; `object-position` (see .contact-portrait-image below)
+  controls which part stays in frame, so lower the second value (43%) to
+  show more of the top of the picture.
+
+  .contact-portrait-placeholder (initials on a green gradient) is not used
+  by the page right now. It is kept as a fallback you can drop into the
+  frame while a photo is unavailable.
 */
 .contact-portrait-placeholder {
   width: 100%;
@@ -148,7 +169,8 @@
   white-space: nowrap;
 }
 
-/* Short positioning statement */
+/* ---- 2. Tagline ----
+   The <span> inside the paragraph is the green highlighted phrase. */
 .contact-tagline {
   max-width: 720px;
   margin: 20px 0 0;
@@ -164,7 +186,10 @@
   text-shadow: 0 0 22px rgba(85, 202, 131, 0.14);
 }
 
-/* Four areas of work */
+/* ---- 3. Areas of work ----
+   4 columns on desktop, 2 columns from 900px down (it stays 2 columns on
+   phones). To add a fifth card, also change the column counts here and in
+   both media queries so the grid doesn't end with an orphan card. */
 .contact-skills {
   width: 100%;
   margin: 29px auto 0;
@@ -245,7 +270,11 @@
   line-height: 1.58;
 }
 
-/* Contact methods */
+/* ---- 4. Contact links ----
+   .contact-divider draws two fading lines with a small diamond between
+   them; it is decorative and hidden from screen readers in the HTML.
+   Links wrap onto extra rows automatically (flex-wrap), so the button
+   labels (email, phone, social) can change length freely. */
 .contact-connect {
   width: min(760px, 100%);
   margin: 31px auto 0;
@@ -345,12 +374,15 @@
   stroke-linejoin: round;
 }
 
+/* Uses the standalone `rotate` property on purpose. Each ring already has a
+   fixed tilt set through `transform: rotate(...)`; animating `transform`
+   would erase that tilt, while `rotate` stacks on top of it. */
 @keyframes contact-orbit-drift {
   from { rotate: 0deg; }
   to { rotate: 360deg; }
 }
 
-/* Tablet */
+/* Tablet: skill cards drop to two columns */
 @media (max-width: 900px) {
   .contact-profile {
     margin-top: 0;
@@ -367,7 +399,8 @@
   }
 }
 
-/* Mobile */
+/* Phones: smaller portrait and rings, tighter cards, and the contact
+   buttons become a two-per-row grid (min-width: calc(50% - 4px)) */
 @media (max-width: 560px) {
   .contact-portrait-wrap {
     width: 192px;
@@ -435,6 +468,8 @@
   }
 }
 
+/* Respects the OS "reduce motion" setting: stops the spinning ring and the
+   hover lift on cards and links. */
 @media (prefers-reduced-motion: reduce) {
   .contact-orbit-two,
   .contact-skill-card,

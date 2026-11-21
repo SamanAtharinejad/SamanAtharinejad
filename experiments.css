@@ -1,6 +1,13 @@
 /* =====================================
-   EXPERIMENTS — COMING SOON
-   Styles are scoped to the Experiments view.
+   EXPERIMENTS VIEW  (<section id="experiments"> in index.html)
+   Currently a "coming soon" page.
+
+   Two columns on desktop:
+     left  = eyebrow, big title, short description
+     right = "workbench" glass panel listing three stages
+   Both stack into one column at 850px and below.
+
+   All classes start with `experiments-` so they can't affect other views.
 ===================================== */
 
 .experiments-view {
@@ -23,7 +30,10 @@
   padding-block: 28px;
 }
 
-/* A quiet glow behind the workbench, using the site's existing palette. */
+/* Soft green glow behind the workbench panel.
+   It is a pseudo-element, so it needs no markup. z-index: -1 works because
+   .experiments-layout sets `isolation: isolate`, which keeps the glow
+   behind the content but still in front of the page background. */
 .experiments-layout::before {
   content: "";
   position: absolute;
@@ -41,7 +51,7 @@
   pointer-events: none;
 }
 
-/* LEFT — INTRODUCTION */
+/* ---- LEFT: introduction ---- */
 
 .experiments-eyebrow {
   display: flex;
@@ -71,6 +81,11 @@
   opacity: 0.5;
 }
 
+/* The !important flags below are intentional. The global rule `.view h1` in
+   mainpage.css (specificity 0,1,1) is stronger than a single class (0,1,0)
+   and would override this heading's margin, size, weight and tracking.
+   If you want to remove them, raise this selector's specificity instead,
+   e.g. `.experiments-view .experiments-title`. */
 .experiments-title {
   max-width: 680px;
   margin: 0 !important;
@@ -82,6 +97,8 @@
   letter-spacing: -0.075em !important;
 }
 
+/* The <em> word ("soon...") is italic by default; it is also switched to a
+   serif face (Georgia) for contrast with the sans-serif title. */
 .experiments-title em {
   color: #8ee6a9;
   font-family: Georgia, "Times New Roman", serif;
@@ -99,7 +116,9 @@
   line-height: 1.9;
 }
 
-/* RIGHT — WORKBENCH PANEL */
+/* ---- RIGHT: workbench panel ----
+   Frosted-glass card (same blur recipe as the nav bar and contact cards).
+   overflow: hidden keeps its corner glow inside the rounded edges. */
 
 .experiments-workbench {
   position: relative;
@@ -183,6 +202,7 @@
   animation: experiments-status-pulse 2.3s ease-out infinite;
 }
 
+/* The dot's ::after ring expands and fades, repeating, to suggest "live". */
 @keyframes experiments-status-pulse {
   0% {
     transform: scale(0.55);
@@ -213,6 +233,10 @@
   line-height: 1.75;
 }
 
+/* Stage list. To add or rename a stage, copy one .experiments-step block in
+   index.html. Rows are a 3-column grid: number | name | status text.
+   The last row's status is highlighted green (see `:last-child` below), so
+   keep the "Share / Coming soon" row last, or move that rule. */
 .experiments-steps {
   position: relative;
   margin-top: 27px;
@@ -254,8 +278,11 @@
   color: #8edda4;
 }
 
-/* RESPONSIVE */
+/* ---- RESPONSIVE ---- */
 
+/* Tablet and below: single column. The glow moves from the right edge to
+   the bottom, and the title gets its own !important size for the same
+   reason as above. */
 @media (max-width: 850px) {
   .experiments-layout {
     grid-template-columns: minmax(0, 1fr);
@@ -310,6 +337,7 @@
   }
 }
 
+/* Respects the OS "reduce motion" setting: stops the pulsing ring. */
 @media (prefers-reduced-motion: reduce) {
   .experiments-status-dot::after {
     animation: none;

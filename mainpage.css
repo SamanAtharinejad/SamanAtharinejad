@@ -1,5 +1,30 @@
 /* =====================================
+   MAIN STYLESHEET — CONTENTS
+    1. Global settings (colour tokens)
+    2. Ambient background glow
+    3. Background particles
+    4. Site container
+    5. Header: brand, navigation, ribbon wave
+    6. Main content / view switching
+    7. Home view
+    8. Home orbital visual
+    9. "Explore my work" glass button
+   10. Responsive layout (phones, <= 760px)
+   11. Keyframe animations
+   12. Reduced-motion rules
+   13. Floating music player
+
+   The other views have their own stylesheets, loaded after this one in
+   index.html: film-gallery.css, experiments.css, contact.css. Each one
+   prefixes its classes (film-, experiments-, contact-) to avoid clashes.
+===================================== */
+
+/* =====================================
    1. GLOBAL SETTINGS
+   Colour tokens shared by every stylesheet (read with var(--name)).
+   Change a value here and the whole site follows.
+   (The ARCHE phone in film-gallery.css defines its own brighter --green,
+   but only inside the phone.)
 ===================================== */
 
 :root {
@@ -25,6 +50,9 @@ body {
 
 /* =====================================
    2. AMBIENT BACKGROUND
+   A fixed, full-screen layer behind the whole site (z-index 0).
+   pointer-events: none means it never blocks clicks. The site content sits
+   above it because .site-container has z-index 1.
 ===================================== */
 
 .ambient-background {
@@ -43,6 +71,10 @@ body {
     var(--background);
 }
 
+/* Big green glow that gently "breathes" (keyframes in section 11).
+   Horizontal centring is done with left: 50% + translateX(-50%), and that
+   same translateX is repeated inside the `breathe` keyframes. If you change
+   the centring, change both places or the glow will jump sideways. */
 .ambient-glow {
   position: absolute;
   top: 90px;
@@ -67,6 +99,13 @@ body {
 
 /* =====================================
    3. BACKGROUND PARTICLES
+   Seven glowing dots drifting slowly. Each dot's position and motion come
+   from the :nth-child rules below, which set the CSS variables read by the
+   `particle-float` keyframes:
+     --duration / --delay   timing of the drift
+     --drift-x / --drift-y  how far it travels
+   To add a dot: add another <span class="particle"></span> in index.html
+   and copy one :nth-child block with a new number.
 ===================================== */
 
 .particles {
@@ -152,6 +191,9 @@ body {
 
 /* =====================================
    4. WEBSITE CONTAINER
+   Centred content column: 64px of side space, 1280px maximum width
+   (36px of side space on phones, see section 10). z-index: 1 keeps it above
+   the ambient background.
 ===================================== */
 
 .site-container {
@@ -170,6 +212,10 @@ body {
 
 /* =====================================
    5. HEADER
+   Brand on the left, navigation on the right (stacked on phones).
+   .site-header is position: relative because the ribbon wave (5.2) is
+   absolutely positioned against its bottom edge. padding-bottom reserves
+   space for that ribbon.
 ===================================== */
 
 .site-header {
@@ -185,7 +231,9 @@ body {
   border-bottom: none;
 }
 
-/* Brand */
+/* Brand. The negative margins on the name and the +5px on the role are
+   manual nudges that line the two text rows up optically. Adjust them here
+   if you restyle the brand. */
 
 .brand,
 .brand-name,
@@ -224,6 +272,11 @@ body {
 
 /* =====================================
    5.1 NAVIGATION — FROSTED GLASS
+   Markup: <nav class="main-navigation"> holds one .glass-indicator (the
+   sliding highlight) plus one .nav-item button per view. The button's
+   data-view value must equal the id of the <section> it shows.
+   mainpage.js (section "NAVIGATION") moves the indicator; this file only
+   styles it. On phones the nav scrolls sideways when the tabs don't fit.
 ===================================== */
 
 .main-navigation {
@@ -252,7 +305,12 @@ body {
   isolation: isolate;
 }
 
-/* Moving glass capsule */
+/* The sliding glass capsule behind the active/hovered tab.
+   JS writes its `width` and `transform: translateX()` inline, which is why
+   both are 0 here. It must stay position: absolute INSIDE .main-navigation
+   (JS measures from the nav's left edge, including its scroll offset).
+   opacity starts at 0 and becomes 0.9 once JS adds `.has-indicator`, which
+   avoids a flash of an empty capsule before the first measurement. */
 
 .glass-indicator {
   position: absolute;
@@ -297,7 +355,8 @@ body {
   opacity: 0.9;
 }
 
-/* Navigation buttons */
+/* Tab buttons. The text colour is set on .nav-label (below) so that hover,
+   keyboard focus and the active tab all share one highlight rule. */
 
 .nav-item {
   position: relative;
@@ -338,15 +397,26 @@ body {
 
 /* =====================================
    5.2 HEADER — ORGANIC RIBBON WAVE
+   The animated SVG ribbon under the header (markup + animation notes are in
+   index.html, inside <div class="header-wave">).
+
+   FULL-WIDTH: the ribbon is sized against the VIEWPORT (100vw), not against
+   .site-container (max 1280px), so it reaches both screen edges on any
+   device. `left: calc(50% - 50vw)` re-centres it on the screen from inside
+   the narrower, centred container. The SVG inside uses
+   preserveAspectRatio="none", so it stretches to whatever width this box
+   has. On very wide screens the waves simply get longer.
+   Any few pixels it overshoots on desktop (when a scrollbar is showing)
+   are clipped by `overflow-x: hidden` on <body>.
 ===================================== */
 
 .header-wave {
   position: absolute;
 
-  left: -2%;
+  left: calc(50% - 50vw);
   bottom: -30px;
 
-  width: 104%;
+  width: 100vw;
   height: 100px;
 
   z-index: 1;
@@ -370,6 +440,9 @@ body {
 
 /* =====================================
    6. MAIN CONTENT
+   Each page is a <section class="view"> inside .view-container.
+   mainpage.js shows exactly one at a time by toggling the `hidden`
+   attribute and the `.active` class.
 ===================================== */
 
 .view-container {
@@ -386,10 +459,16 @@ body {
   width: 100%;
 }
 
+/* Needed because some views set their own `display` (e.g. flex), which would
+   otherwise override the browser's built-in [hidden] rule and leave several
+   pages visible at once. */
 .view[hidden] {
   display: none !important;
 }
 
+/* Default heading for every view. Individual views override it, and
+   .experiments-title needs !important to do so because of this rule's
+   specificity (see experiments.css). */
 .view h1 {
   margin: 0 0 24px;
 
@@ -400,6 +479,9 @@ body {
 
 /* =====================================
    7. HOME — INTRODUCTION
+   Two-column grid: intro text on the left, orbital visual on the right.
+   Collapses to one column at 760px (section 10). The "Explore my work"
+   button sits below the grid, pushed to the bottom by `margin-top: auto`.
 ===================================== */
 
 .home-view {
@@ -422,8 +504,6 @@ body {
   flex: 1 0 auto;
   width: 100%;
 }
-
-/* Introduction */
 
 .home-intro {
   max-width: 650px;
@@ -472,8 +552,13 @@ body {
 
 /* =====================================
    8. ORBITAL VISUAL
-   The central blob has been removed.
-   The spinning orbital elements remain.
+   Three thin elliptical rings with glowing dots. Each ring is really a
+   circle that is squashed with scaleY() and tilted with rotate(), which
+   is what gives the "orbit seen at an angle" look. orbit-one and orbit-two
+   spin in opposite directions; orbit-three stays still.
+   The spin keyframes use the standalone `rotate` property (section 11), so
+   it stacks on top of the fixed tilt instead of replacing it.
+   The whole visual is decorative (aria-hidden in the HTML).
 ===================================== */
 
 .home-visual {
@@ -539,6 +624,8 @@ body {
   background: #6fc990;
 }
 
+/* Small text labels placed with percentages, so they keep their spot as the
+   visual scales. */
 .visual-caption,
 .visual-coordinate {
   position: absolute;
@@ -562,16 +649,17 @@ body {
 }
 
 /* =====================================
-   9. PARTICLE-REACTIVE EXPLORE BUTTON
+   9. "EXPLORE MY WORK" GLASS BUTTON
+   The button (#explore-work) tilts toward the pointer. mainpage.js writes
+   --tilt-x / --tilt-y while the pointer moves and toggles the .is-hovered /
+   .is-pressed classes; this section turns those into visuals. Clicking it
+   opens the Film & Animation view.
 ===================================== */
 
-/* 
-   POSITION ADJUSTMENT:
-   Change the two values below to move the button yourself.
-
-   X: positive = right, negative = left.
-   Y: positive = down, negative = up.
-*/
+/* SUPERSEDED: this first .home-cta-wrap rule is completely overridden by the
+   second .home-cta-wrap rule further down (same properties, declared later).
+   Changing the offsets here does nothing, so use the second block. Safe to
+   delete once you no longer need it for reference. */
 
 .home-cta-wrap {
   --cta-offset-x: -10px;
@@ -588,11 +676,10 @@ body {
   padding-bottom: clamp(10px, 2vh, 24px);
 }
 
-/* Transparent button shell */
-
-/* =====================================
-   GLASS EXPLORE BUTTON
-===================================== */
+/* The rule that actually applies.
+   POSITION ADJUSTMENT: change --cta-offset-x / --cta-offset-y to nudge the
+   button. X: positive = right, negative = left. Y: positive = down,
+   negative = up. (On phones, section 10 overrides the margin and padding.) */
 
 .home-cta-wrap {
   --cta-offset-x: 0px;
@@ -610,6 +697,9 @@ body {
   transform: translate(var(--cta-offset-x), var(--cta-offset-y));
 }
 
+/* The four variables below are combined into the single `transform` further
+   down. Don't set another `transform` on this element: it would replace the
+   tilt and press effects. */
 .glass-button {
   --tilt-x: 0deg;
   --tilt-y: 0deg;
@@ -725,6 +815,8 @@ body {
 
 /* =====================================
    10. RESPONSIVE LAYOUT
+   One main breakpoint at 760px (phones and small tablets). The other views
+   add their own smaller breakpoints in their stylesheets.
 ===================================== */
 
 @media (max-width: 760px) {
@@ -738,6 +830,9 @@ body {
     gap: 20px;
   }
 
+  /* The tabs scroll sideways when they don't fit. The glass indicator lives
+     inside this scrolling row, so mainpage.js adds the row's scrollLeft when
+     it positions the indicator and scrolls the active tab into view. */
   .main-navigation {
     width: 100%;
     gap: 24px;
@@ -784,6 +879,9 @@ body {
     padding-top: 0;
   }
 
+  /* Dead rule: nothing in index.html uses the .particle-button class (it
+     belongs to an earlier version of the button). Phone sizing for the real
+     button is the `.glass-button` rule in section 9. */
   .home-cta.particle-button {
     width: min(235px, 86vw);
     min-height: 62px;
@@ -794,7 +892,8 @@ body {
    11. ANIMATIONS
 ===================================== */
 
-/* Background breathing */
+/* Ambient glow breathing. The translateX(-50%) is part of the glow's
+   centring (see section 2); keep it in both keyframes. */
 
 @keyframes breathe {
   0%,
@@ -828,7 +927,8 @@ body {
   }
 }
 
-/* Orbital rotation */
+/* Orbital rotation. Uses `rotate` (not `transform`) so each ring keeps the
+   tilt and squash set in section 8. */
 
 @keyframes orbit-rotate {
   from {
@@ -852,6 +952,9 @@ body {
 
 /* =====================================
    12. ACCESSIBILITY
+   Honours the visitor's OS "reduce motion" setting: stops the ambient
+   animations and hides the moving ribbon. The other stylesheets include
+   their own reduced-motion blocks for their views.
 ===================================== */
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,9 +1,37 @@
+/*
+  MAIN PAGE SCRIPT  (loaded with `defer` from index.html)
+
+  Three independent features, in this order:
+    1. NAVIGATION          view switching + the sliding glass indicator
+    2. EXPLORE BUTTON      pointer tilt on the home "Explore my work" button
+    3. BACKGROUND MUSIC    audio player widget (still the original version)
+
+  The whole file is wrapped in an IIFE so none of its variables leak onto
+  `window`. film-gallery.js is a separate file that reacts to this one: it
+  watches the Film & Animation <section> for its `hidden` attribute, which
+  activateView() below toggles.
+*/
+
 (() => {
   "use strict";
 
   /* =====================================
-     NAVIGATION
+     1. NAVIGATION
+
+     How it connects to the HTML:
+       <button class="nav-item" data-view="film-animation">
+       <section class="view" id="film-animation">
+     The data-view value MUST match the section's id. To add a page, add one
+     button and one section with the same name; no JS change is needed.
+
+     The glass indicator is an absolutely positioned element inside the nav
+     (see CSS section 5.1). It is moved by writing an inline width and
+     translateX(); CSS animates the movement.
   ===================================== */
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
 
   const navigation = document.querySelector(".main-navigation");
   const navItems = navigation
@@ -13,13 +41,23 @@
   const indicator = navigation?.querySelector(".glass-indicator");
   const views = [...document.querySelectorAll(".view")];
 
+  /*
+    Slides the glass capsule under `target` (a .nav-item).
+
+    The capsule is positioned inside the nav, so its x must be measured in the
+    nav's own scrolling coordinates. On phones the tab row scrolls sideways,
+    and getBoundingClientRect() reports positions on SCREEN, which already
+    include that scroll. Adding navigation.scrollLeft converts back; without
+    it the capsule ended up far away from its tab after the row was scrolled.
+    (The "+ 2" matches the capsule's `left: -2px` in CSS.)
+  */
   function moveIndicator(target) {
     if (!navigation || !indicator || !target) return;
 
     const navRect = navigation.getBoundingClientRect();
     const buttonRect = target.getBoundingClientRect();
 
-    const x = buttonRect.left - navRect.left + 2;
+    const x = buttonRect.left - navRect.left + navigation.scrollLeft + 2;
 
     indicator.style.width = `${buttonRect.width}px`;
     indicator.style.transform = `translateX(${x}px)`;
@@ -27,12 +65,37 @@
     navigation.classList.add("has-indicator");
   }
 
+  // Resting position: the capsule always settles back under the active tab.
   function returnIndicatorToActive() {
     const active = navigation?.querySelector(".nav-item.active");
     if (active) moveIndicator(active);
   }
 
-  function activateView(viewId) {
+  /*
+    Phones only: when the tabs are wider than the screen the row scrolls
+    sideways. This centres the given tab so the active page is never hidden
+    off-screen. It scrolls the nav row itself, never the page, so the page
+    doesn't jump. Does nothing when all tabs already fit (desktop).
+  */
+  function scrollNavToTab(target, smooth) {
+    if (!navigation || !target) return;
+    if (navigation.scrollWidth <= navigation.clientWidth) return;
+
+    const left =
+      target.offsetLeft - (navigation.clientWidth - target.offsetWidth) / 2;
+
+    navigation.scrollTo({
+      left: Math.max(0, left),
+      behavior: smooth && !prefersReducedMotion ? "smooth" : "auto",
+    });
+  }
+
+  /*
+    Shows the section whose id is `viewId` and hides all the others, then
+    syncs the nav buttons (.active class + aria-current for screen readers).
+    Pass { smooth: false } to skip animated scrolling of the tab row.
+  */
+  function activateView(viewId, { smooth = true } = {}) {
     const targetView = document.getElementById(viewId);
 
     if (!targetView || !targetView.classList.contains("view")) return;
@@ -51,17 +114,44 @@
 
       if (active) {
         item.setAttribute("aria-current", "page");
+        scrollNavToTab(item, smooth);
       } else {
         item.removeAttribute("aria-current");
       }
     });
 
+    // Wait one frame so the new .active class has been applied before
+    // measuring.
     requestAnimationFrame(returnIndicatorToActive);
   }
 
+  // :focus-visible is true for keyboard focus but not for a mouse/touch tap.
+  // The try/catch keeps very old browsers (no :focus-visible) working.
+  function isKeyboardFocus(element) {
+    try {
+      return element.matches(":focus-visible");
+    } catch (_) {
+      return true;
+    }
+  }
+
   navItems.forEach((item) => {
-    item.addEventListener("pointerenter", () => moveIndicator(item));
-    item.addEventListener("focus", () => moveIndicator(item));
+    /*
+      Hover preview: the capsule follows the mouse. Ignored for touch because
+      a finger "enters" the tab on touch-down and "leaves" on lift-off, just
+      before the click arrives. That made the capsule jump to the tapped tab,
+      snap back, then jump forward again on phones. On touch, the click alone
+      decides where the capsule goes.
+    */
+    item.addEventListener("pointerenter", (event) => {
+      if (event.pointerType !== "touch") moveIndicator(item);
+    });
+
+    // Keyboard users tabbing through the nav get the same preview as hover.
+    item.addEventListener("focus", () => {
+      if (isKeyboardFocus(item)) moveIndicator(item);
+    });
+
     item.addEventListener("click", () => activateView(item.dataset.view));
   });
 
@@ -75,17 +165,26 @@
     });
   }
 
+  // Rotating the phone or resizing the window changes the tab positions.
   window.addEventListener("resize", returnIndicatorToActive);
 
+  // First page shown: whichever tab has .active in the HTML, otherwise the
+  // first .active section, otherwise "home".
   const initialView =
     navigation?.querySelector(".nav-item.active")?.dataset.view ||
     document.querySelector(".view.active")?.id ||
     "home";
 
-  activateView(initialView);
+  activateView(initialView, { smooth: false });
 
   /* =====================================
-     EXPLORE BUTTON
+     2. EXPLORE BUTTON  (#explore-work on the home page)
+
+     While the pointer moves over the button, --tilt-x / --tilt-y are written
+     onto it (up to 5deg and 7deg) and CSS turns them into a 3D tilt (see
+     "9. Explore my work" in mainpage.css). .is-hovered and .is-pressed are
+     plain state classes for the extra glow and the pressed-in look.
+     Clicking the button opens the Film & Animation page.
   ===================================== */
 
   const exploreButton = document.querySelector("#explore-work");
@@ -95,6 +194,8 @@
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
+    // Converts the pointer position to -1..1 across the button, then to a
+    // small rotation. Skipped entirely when the OS asks for reduced motion.
     function updateTilt(event) {
       if (reducedMotion) return;
 
@@ -112,6 +213,7 @@
       exploreButton.classList.add("is-hovered");
     }
 
+    // Back to flat: pointer left the button, or the button lost focus.
     function resetButton() {
       exploreButton.style.setProperty("--tilt-x", "0deg");
       exploreButton.style.setProperty("--tilt-y", "0deg");
@@ -131,6 +233,8 @@
       exploreButton.classList.add("is-pressed");
     });
 
+    // Listen on `window`, not the button, so the pressed look is released
+    // even when the pointer is let go somewhere else on the page.
     window.addEventListener("pointerup", releaseButton);
     window.addEventListener("pointercancel", releaseButton);
 
@@ -142,7 +246,17 @@
   }
 
   /* =====================================
-     BACKGROUND MUSIC PLAYER
+     3. BACKGROUND MUSIC PLAYER
+
+     Expects these elements from index.html: #site-music (the <audio>),
+     #music-widget, #music-toggle, #music-toggle-icon, #music-disc,
+     #music-status and #music-volume. If #site-music is missing, the whole
+     player quietly does nothing.
+
+     Behaviour: tries to autoplay; browsers usually block that, so the first
+     click or key press anywhere on the page starts the music instead. Music
+     pauses while a video plays and resumes afterwards, unless the visitor
+     paused it themselves.
   ===================================== */
 
   (() => {
